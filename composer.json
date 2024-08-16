@@ -1,0 +1,19 @@
+{
+    "name": "ehsan12/reisetopia-hotel",
+    "description": "Reisetopia Hotel Challeng Plugin",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "RHC\\": ""
+        },
+        "files": ["includes/functions.php"]
+    },
+    "authors": [
+        {
+            "name": "ehsan ravanbakhsh",
+            "email": "e.ravanbakhsh@gmail.com"
+        }
+    ],
+    "require": {
+    }
+}

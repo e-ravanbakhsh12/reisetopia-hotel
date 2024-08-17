@@ -2,6 +2,8 @@
 
 namespace RHC\includes\publics;
 
+use RHC\includes\Ajax;
+
 /**
  * This file is the public class of plugin
  */
@@ -64,7 +66,7 @@ class Publics
                 'hierarchical'    => false,
                 'menu_position'   => 10,
                 'menu_icon'       => 'dashicons-admin-multisite',
-                'supports'        => ['title',  'author','thumbnail', 'custom-fields'],
+                'supports'        => ['title',  'author', 'thumbnail', 'custom-fields'],
                 'rewrite'         => array(
                     'slug' => 'hotels',
                     'with_front' => false
@@ -74,27 +76,22 @@ class Publics
 
             // Register hotel post type
             register_post_type('reisetopia_hotel', $args);
-
         }
     }
 
-
-    /**
-     * Enqueue public css file
-     */
-    public function enqueueCss()
+    public function localizeArr()
     {
-
-        wp_enqueue_style('rhc-public', RHC_URL . 'assets/css/public-style.css', array(), RHC_VERSION, 'all');
+        $ajax = new Ajax();
+        return [
+            'adminAjax'   => admin_url('admin-ajax.php'),
+            'homeUrl'   => home_url(),
+            'nonce' => wp_create_nonce($ajax->getNonce()),
+            'path' => RHC_DIR,
+        ];
     }
 
-    /**
-     * Enqueue public js file
-     */
-    public function enqueueJs()
+    public function reisetopiaHotelsShortcodeHandler($attrs = [])
     {
-
-
-        wp_enqueue_script('rhc-public', RHC_URL . 'assets/js/public.js', array('jquery'), RHC_VERSION, true);
+        include_once RHC_DIR . '/includes/publics/shortcode.php';
     }
 }

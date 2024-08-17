@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: reisetopia hotel\n"
-"POT-Creation-Date: 2024-08-17 00:46+0330\n"
+"POT-Creation-Date: 2024-08-17 12:21+0330\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,22 +25,95 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-1: node_modules\n"
 "X-Poedit-SearchPathExcluded-2: vendor\n"
 
-#: includes/admin/Admin.php:48 includes/admin/Admin.php:49
-msgid "مقایسه محصولات"
+#: includes/Ajax.php:68 includes/RestApi.php:59
+msgid "hotels list"
 msgstr ""
 
-#: includes/ajax/search-post.php:22
-msgid "اطلاعات محصولات ها با موفقیت بروزرسانی شد"
+#: includes/Ajax.php:80 includes/RestApi.php:71
+msgid "hotel data"
 msgstr ""
 
-#: includes/functions.php:16
+#: includes/Ajax.php:88
+msgid "Are you cheating!!"
+msgstr ""
+
+#: includes/RestApi.php:56
+msgid "No hotels found"
+msgstr ""
+
+#: includes/RestApi.php:68
+msgid "Hotel not found"
+msgstr ""
+
+#: includes/functions.php:13
 #, php-format
 msgid ""
-"The <b>WooCommerce</b> plugin must be active for <b>%s Triboon Advance "
-"compare</b> plugin to work. Please <a href=\"%s\" target=\"_blank"
-"\">install & activate WooCommerce</a>."
+"The <b>Advanced Custom Fields</b> plugin must be active for <b>Reisetopia "
+"Hotel Challenge</b> to work. Please <a href=\"%s\" target=\"_blank"
+"\">install & activate ACF</a>."
+msgstr ""
+
+#: includes/publics/Publics.php:36 includes/publics/Publics.php:53
+msgid "Hotels"
+msgstr ""
+
+#: includes/publics/Publics.php:37
+msgid "Hotel"
 msgstr ""
 
 #: includes/publics/Publics.php:38
-msgid "compare page"
+msgid "Search Hotels"
+msgstr ""
+
+#: includes/publics/Publics.php:39
+msgid "All Hotels"
+msgstr ""
+
+#: includes/publics/Publics.php:40
+msgid "Parent Hotel"
+msgstr ""
+
+#: includes/publics/Publics.php:41 includes/publics/Publics.php:47
+#: includes/publics/Publics.php:48
+msgid "Add New Hotel"
+msgstr ""
+
+#: includes/publics/Publics.php:42
+msgid "No Hotels Found"
+msgstr ""
+
+#: includes/publics/Publics.php:43
+msgid "Hotels Archive"
+msgstr ""
+
+#: includes/publics/Publics.php:44
+msgid "Inset into Hotel"
+msgstr ""
+
+#: includes/publics/Publics.php:45
+msgid "Hotel Link"
+msgstr ""
+
+#: includes/publics/Publics.php:46
+msgid "Edit Hotel"
+msgstr ""
+
+#: includes/publics/Publics.php:49
+msgid "View Hotel"
+msgstr ""
+
+#: includes/publics/Publics.php:50
+msgid "View Hotels"
+msgstr ""
+
+#: includes/publics/Publics.php:51
+msgid "Hotel Update"
+msgstr ""
+
+#: includes/publics/Publics.php:52
+msgid "Hotel Trash"
+msgstr ""
+
+#: includes/publics/Publics.php:59
+msgid "hotels"
 msgstr ""

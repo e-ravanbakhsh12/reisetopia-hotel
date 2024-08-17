@@ -24,31 +24,49 @@ if (!defined('ABSPATH')) {
 class Query
 {
 
-    public function  getAllHotels($name = '', $location = '', $max_price = '')
+    public function  getAllHotels($attrs = [])
     {
+        $defaultAttrs = [
+            'name' => '',
+            'location' => '',
+            'max_price' => '',
+            'min_price' => '',
+            'sorting' => 'date',
+            'order' => 'DESC'
+        ];
+        $attrs = wp_parse_args($attrs, $defaultAttrs);
         $return = [];
         $args = array(
             'post_type'  => 'reisetopia_hotel',
             'posts_per_page' => -1,
+            'order' => $attrs['order'],
+            'orderby' => $attrs['sorting'] == 'price_range_max' || $attrs['sorting'] == 'price_range_min' ? 'meta_value_num' : $attrs['sorting'],
         );
-        if (!empty($name)) $args['s'] = $name;
-        if (!empty($location)) $args['meta_query'][] = array(
+        if ($attrs['sorting'] == 'price_range_max' || $attrs['sorting'] == 'price_range_min') $args['meta_key'] = $attrs['sorting'];
+        if (!empty($attrs['name'])) $args['s'] = $attrs['name'];
+        if (!empty($attrs['location'])) $args['meta_query'][] = array(
             'relation' => 'OR',
             array(
                 'key'     => 'city',
-                'value'   => $location,
-                'compare' => 'like',
+                'value'   => $attrs['location'],
+                'compare' => 'LIKE',
             ),
             array(
                 'key'     => 'country',
-                'value'   => $location,
-                'compare' => 'like',
+                'value'   => $attrs['location'],
+                'compare' => 'LIKE',
             ),
         );
-        if (!empty($max_price)) $args['meta_query'][] = array(
-            'key'     => 'max_price',
-            'value'   => $max_price,
+        if (!empty($attrs['max_price'])) $args['meta_query'][] = array(
+            'key'     => 'price_range_max',
+            'value'   => $attrs['max_price'],
             'compare' => '<=',
+            'type'    => 'NUMERIC',
+        );
+        if (!empty($attrs['min_price'])) $args['meta_query'][] = array(
+            'key'     => 'price_range_min',
+            'value'   => $attrs['min_price'],
+            'compare' => '>=',
             'type'    => 'NUMERIC',
         );
 
@@ -69,6 +87,8 @@ class Query
                     'country' => $country,
                     'priceRange' => ['min' => $priceMin, 'max' => $priceMax],
                     'rate' => $rate,
+                    'link' => get_permalink($hotel->ID),
+                    'img' => get_the_post_thumbnail_url($hotel->ID, 'post-thumbnail'),
                 ];
             }
             wp_reset_postdata();
@@ -93,6 +113,7 @@ class Query
                 'country' => $country,
                 'priceRange' => ['min' => $priceMin, 'max' => $priceMax],
                 'rate' => $rate,
+                'img' => get_the_post_thumbnail_url($hotel->ID, 'thumbnail'),
             ];
         }
         return [$hotel, $data];

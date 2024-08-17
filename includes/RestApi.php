@@ -46,17 +46,29 @@ class RestApi
 
     public function hotelsListCallBack($request)
     {
-        $name = $request->get_param('name') ?: '';
-        $location = $request->get_param('location') ?: '';
-        $max_price = $request->get_param('max_price') ?: '';
+        $params = json_decode($request->get_body(), true);
+
+        $name = isset($params['name']) ? $params['name'] : '';
+        $location = isset($params['location']) ? $params['location'] : '';
+        $sorting = isset($params['sorting']) ? $params['sorting'] : 'date';
+        $order = isset($params['order']) ? $params['order'] : 'DESC';
+        $max_price = isset($params['max_price']) ? $params['max_price'] : '';
+        $min_price = isset($params['min_price']) ? $params['min_price'] : '';
         $query = new Query();
-        $data = $query->getAllHotels($name, $location, $max_price);
+        $data = $query->getAllHotels([
+            'name' => $name,
+            'location' => $location,
+            'max_price' => $max_price,
+            'min_price' => $min_price,
+            'sorting' => $sorting,
+            'order' => $order
+        ]);
 
         if (empty($data)) {
-            return   $this->apiResponse(404, 'No hotels found');
+            return   $this->apiResponse(404, esc_html__('No hotels found'));
         }
 
-        return $this->apiResponse(200, 'hotels list', $data);
+        return $this->apiResponse(200, esc_html__('hotels list'), $data);
     }
 
     public function singleHotelsCallBack($request)
@@ -65,10 +77,10 @@ class RestApi
         $query = new Query();
         [$hotel, $data] = $query->getHotelById($id);
         if (!$hotel || $hotel->post_type !== 'reisetopia_hotel') {
-            return $this->apiResponse(404, 'Hotel not found');
+            return $this->apiResponse(404, esc_html__('Hotel not found'));
         }
 
-        return $this->apiResponse(200, 'hotel data', $data);
+        return $this->apiResponse(200, esc_html__('hotel data'), $data);
     }
 
 

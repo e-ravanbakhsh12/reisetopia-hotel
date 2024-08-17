@@ -67,9 +67,8 @@ class RHC
     {
         $publics = new Publics();
         add_action('wp_loaded', [$publics, 'loadTextdomain']);
-        add_action('wp_enqueue_scripts', [$publics, 'enqueueCss']);
-        add_action('wp_enqueue_scripts', [$publics, 'enqueueJs']);
         add_action('init', [$publics, 'registerPostType']);
+        add_shortcode('reisetopia-hotels', [$publics, 'reisetopiaHotelsShortcodeHandler']);  
     }
     
 }

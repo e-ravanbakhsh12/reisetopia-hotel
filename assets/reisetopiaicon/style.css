@@ -1,0 +1,87 @@
+@font-face {
+  font-family: 'reisetopiaicon';
+  src:  url('fonts/reisetopiaicon.eot?e30g9b');
+  src:  url('fonts/reisetopiaicon.eot?e30g9b#iefix') format('embedded-opentype'),
+    url('fonts/reisetopiaicon.ttf?e30g9b') format('truetype'),
+    url('fonts/reisetopiaicon.woff?e30g9b') format('woff'),
+    url('fonts/reisetopiaicon.svg?e30g9b#reisetopiaicon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="reisetopiaicon-"], [class*=" reisetopiaicon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'reisetopiaicon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.reisetopiaicon-info-circle:before {
+  content: "\e9a1";
+}
+.reisetopiaicon-star-fill:before {
+  content: "\e908";
+}
+.reisetopiaicon-star:before {
+  content: "\e910";
+}
+.reisetopiaicon-gallery:before {
+  content: "\e916";
+}
+.reisetopiaicon-eye:before {
+  content: "\e917";
+}
+.reisetopiaicon-arrow-left-2:before {
+  content: "\e918";
+}
+.reisetopiaicon-like-fill:before {
+  content: "\e901";
+}
+.reisetopiaicon-like:before {
+  content: "\e902";
+}
+.reisetopiaicon-copy:before {
+  content: "\e903";
+}
+.reisetopiaicon-current-location:before {
+  content: "\e904";
+}
+.reisetopiaicon-add:before {
+  content: "\e905";
+}
+.reisetopiaicon-arrow-left:before {
+  content: "\e907";
+}
+.reisetopiaicon-location:before {
+  content: "\e900";
+}
+.reisetopiaicon-location-fill:before {
+  content: "\e90a";
+}
+.reisetopiaicon-notification:before {
+  content: "\e90d";
+}
+.reisetopiaicon-profile:before {
+  content: "\e90e";
+}
+.reisetopiaicon-profile-2:before {
+  content: "\e90f";
+}
+.reisetopiaicon-location-area:before {
+  content: "\e913";
+}
+.reisetopiaicon-close:before {
+  content: "\e914";
+}
+.reisetopiaicon-menu:before {
+  content: "\e915";
+}

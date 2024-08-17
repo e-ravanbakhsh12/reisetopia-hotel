@@ -7,6 +7,7 @@ module.exports = {
   content: [
     // "./**/*.{php,js}",
     "./includes/publics/**/*.{php,js}",
+    "./assets/js/**/*.{php,js}",
   ],
   theme: {
     container: {
@@ -19,7 +20,9 @@ module.exports = {
         sans: ["sanserif", "arial", "sans-serif"],
       },
       fontSize: {},
-      boxShadow: {},
+      boxShadow: {
+        input:'0 3px 6px rgba(0,0,0,.2)',
+      },
       dropShadow: {},
       borderRadius: {},
       backgroundImage: {},

@@ -30,28 +30,16 @@ class Ajax
     /**
      * Ajax array response for wp_send_json
      */
-    public  function ajaxResponse($success = true, $message = null, $value = null)
+    public  function ajaxResponse($status = 200, $message = null, $value = null)
     {
 
         $response = array(
-            'success' => $success,
             'message' => $message,
             'value' => $value,
         );
 
-        wp_send_json($response);
+        wp_send_json($response, $status);
         wp_die();
-    }
-
-
-    public function localizeArray()
-    {
-        return array(
-            'ajaxUrl'   => admin_url('admin-ajax.php'),
-            'homeUrl'   => home_url(),
-            'nonce' => wp_create_nonce($this->nonce),
-            'path' => RHC_DIR,
-        );
     }
 
     public function getHotelsList()
@@ -59,14 +47,24 @@ class Ajax
         $this->checkNonce();
         $name = $_POST['name'] ?: '';
         $location = $_POST['location'] ?: '';
+        $sorting = $_POST['sorting'] ?: 'date';
+        $order = $_POST['order'] ?: 'DESC';
         $max_price = $_POST['max_price'] ?: '';
+        $min_price = $_POST['min_price'] ?: '';
         $query = new Query();
-        $data = $query->getAllHotels($name, $location, $max_price);
+        $data = $query->getAllHotels([
+            'name' => $name,
+            'location' => $location,
+            'max_price' => $max_price,
+            'min_price' => $min_price,
+            'sorting' => $sorting,
+            'order' => $order
+        ]);
 
         if (empty($data)) {
-            $this->ajaxResponse(false, 'No hotels found');
+            $this->ajaxResponse(404, 'No hotels found');
         }
-        $this->ajaxResponse(true, 'hotels list', $data);
+        $this->ajaxResponse(200, esc_html__('hotels list'), $data);
     }
 
     public function getHotelById()
@@ -76,9 +74,9 @@ class Ajax
         $query = new Query();
         [$hotel, $data] = $query->getHotelById($id);
         if (!$hotel || $hotel->post_type !== 'reisetopia_hotel') {
-            $this->ajaxResponse(false, 'Hotel not found');
+            $this->ajaxResponse(404, 'Hotel not found');
         }
-        $this->ajaxResponse(true, 'hotel data', $data);
+        $this->ajaxResponse(200, esc_html__('hotel data'), $data);
     }
 
     public function checkNonce()
@@ -86,7 +84,12 @@ class Ajax
         $nonce  = (isset($_POST['nonce'])) ? $_POST['nonce'] : $_GET['nonce'];
 
         if (!wp_verify_nonce($nonce, $this->nonce)) {
-            $this->ajaxResponse(false, esc_html__('Are you cheating!!', 'rhc'));
+            $this->ajaxResponse(400, esc_html__('Are you cheating!!', 'rhc'));
         }
+    }
+
+    public function getNonce()
+    {
+        return $this->nonce;
     }
 }

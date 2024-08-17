@@ -58,7 +58,14 @@
         };
       } else if (type == "rest-api") {
         url = rhcArr.homeUrl + "/wp-json/reisetopia-hotels/v1/hotels/";
-        data = JSON.stringify({ name, location, sorting, order,max_price,min_price, });
+        data = JSON.stringify({
+          name,
+          location,
+          sorting,
+          order,
+          max_price,
+          min_price,
+        });
       } else {
         return;
       }
@@ -78,8 +85,7 @@
         error: function (xhr, status, error) {
           $(".error-box").removeClass("tw-hidden");
           $(".error-box .message-content").html(
-            xhr.responseJSON?.message ||
-              "unknown error happen please try again"
+            xhr.responseJSON?.message || "unknown error happen please try again"
           );
           $(".hotel-list-container").html("");
         },
@@ -98,6 +104,10 @@
         const img = list[key].img
           ? `<img src="${list[key].img}" class="tw-h-full tw-w-24 md:tw-w-36 tw-object-cover tw-bg-gray-300">`
           : `<div class="tw-h-full tw-w-24 md:tw-w-36 tw-flex-center tw-bg-gray-300"><i class="reisetopiaicon-gallery tw-text-4xl tw-text-white"></i></div>`;
+        let rate='';
+        for (let i = 1; i < 6; i++) {
+          rate+= `<i class="reisetopiaicon-star${i<=Number(list[key].rate)?'-fill':''} tw-text-yellow-300"></i>`
+        }
         html += `
         <a href="${list[key].link}"  class="hotel-item tw-rounded-md tw-border tw-border-solid tw-border-gray-300 tw-flex tw-text-gray-700 tw-overflow-hidden hover:tw-shadow-lg tw-transition-all">
           ${img}
@@ -105,7 +115,7 @@
             <h3 class="tw-font-bold tw-text-lg tw-line-clamp-1 tw-text-black">${list[key].name}</h3>
             <div class="tw-font-bold">Location: <span class="tw-font-normal">${list[key].city}</span></div>
             <div class="tw-font-bold">Price: <span class="tw-font-normal">${list[key].priceRange.min}-${list[key].priceRange.max}</span></div>
-            <div class="tw-font-bold">Rating: <span class="tw-font-normal">${list[key].rate}</span></div>
+            <div class="tw-font-bold">Rating: ${rate}<span class="">( ${list[key].rate} )</span></div>
           </div>
         </a>
         `;

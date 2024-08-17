@@ -113,6 +113,6 @@ $hotelList = new WP_Query($args);
         </div>
     </div>
     <div class="hotel-list-pagination ">
-
+                                
     </div>
 </div>

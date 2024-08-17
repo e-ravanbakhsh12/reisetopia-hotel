@@ -16,7 +16,7 @@
       );
       $(document).on(
         "change keyup pest",
-        "#hotel-name, #hotel-location",
+        "#hotel-name, #hotel-location, #hotel-min-price, #hotel-max-price",
         function (e) {
           e.preventDefault();
           clearTimeout(_this.searchTimeout);
@@ -38,6 +38,8 @@
       const type = $("#hotel-data-source").val();
       const name = $("#hotel-name").val();
       const sorting = $("#hotel-sorting").val();
+      const max_price = $("#hotel-max-price").val();
+      const min_price = $("#hotel-min-price").val();
       const order = $("#hotel-order").val();
       const location = $("#hotel-location").val();
       let data;
@@ -51,10 +53,12 @@
           location,
           sorting,
           order,
+          max_price,
+          min_price,
         };
       } else if (type == "rest-api") {
         url = rhcArr.homeUrl + "/wp-json/reisetopia-hotels/v1/hotels/";
-        data = JSON.stringify({ name, location, sorting, order });
+        data = JSON.stringify({ name, location, sorting, order,max_price,min_price, });
       } else {
         return;
       }
@@ -75,7 +79,7 @@
           $(".error-box").removeClass("tw-hidden");
           $(".error-box .message-content").html(
             xhr.responseJSON?.message ||
-              " unknown error happen please try again"
+              "unknown error happen please try again"
           );
           $(".hotel-list-container").html("");
         },

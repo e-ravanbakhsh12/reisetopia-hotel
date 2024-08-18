@@ -1,5 +1,7 @@
 <?php
 
+use FlameCore\UserAgent\UserAgent;
+
 /**
  * Checks if the Advanced Custom Fields (ACF) plugin is active.
  * If ACF is not active, it triggers an admin notice to inform the user.
@@ -68,4 +70,17 @@ function sanitizeNestedObject($object): array
     }
 
     return $sanitized_object;
+}
+
+/**
+ * Determines if the current user agent is Googlebot.
+ *
+ * This function checks the user agent string from the global request
+ * and returns true if it matches 'Googlebot'
+ *
+ * @return bool Returns true if the user agent is Googlebot, otherwise false.
+ */
+function isGoogleBot()
+{
+    return isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'Googlebot') !== false;
 }

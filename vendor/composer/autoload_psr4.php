@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'RHC\\' => array($baseDir . '/'),
+    'FlameCore\\UserAgent\\' => array($vendorDir . '/flamecore/user-agent/lib'),
 );

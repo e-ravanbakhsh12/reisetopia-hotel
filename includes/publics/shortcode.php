@@ -3,13 +3,21 @@
 namespace RHC\includes\publics;
 
 use WP_Query;
-
-wp_enqueue_script('range-slide', RHC_URL . 'assets/js/range-slide.js', [], RHC_VERSION, true);
-wp_enqueue_script('rhc-public', RHC_URL . 'assets/js/public.js', ['jquery', 'range-slide'], RHC_VERSION, true);
-wp_localize_script('rhc-public', 'rhcArr', $this->localizeArr());
+// css files
 wp_enqueue_style('rhc-public', RHC_URL . 'assets/css/public-style.css', [], RHC_VERSION, 'all');
 wp_enqueue_style('range-slide', RHC_URL . 'assets/css/range-slide.css', [], RHC_VERSION, 'all');
 wp_enqueue_style('rhc-icon', RHC_URL . 'assets/reisetopiaicon/style.css', [], RHC_VERSION, 'all');
+
+// js files
+wp_enqueue_script('range-slide', RHC_URL . 'assets/js/range-slide.js', [], RHC_VERSION, true);
+wp_enqueue_script('rhc-public', RHC_URL . 'assets/js/public.js', ['jquery', 'range-slide'], RHC_VERSION, true);
+wp_localize_script('rhc-public', 'rhcArr', $this->localizeArr());
+// js animation fiels
+if (!isGoogleBot()) {
+    wp_enqueue_script('gsap', RHC_URL . '/assets/js/gsap.min.js', '3.12.5', true);
+    wp_enqueue_script('gsap-st', RHC_URL . '/assets/js/scrollTrigger.min.js', ['gsap'], '3.12.5', true);
+    wp_enqueue_script('rhc-animation', RHC_URL . '/assets/js/animation.js', ['jquery', 'gsap', 'gsap-st'], RHC_VERSION, true);
+}
 
 $page = $_GET['pg'] ?? 1;
 $name = $_GET['search-name'] ?? '';
@@ -65,7 +73,7 @@ $inverseRgiht = !empty($miaxPrice) ? (($miaxPrice-1000)/1000 *100) :0;
 ?>
 <div class="shortcode-container tw-my-10">
     <div class="hotel-filter-container tw-flex tw-flex-col tw-gap-4 ">
-        <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-4 ">
+        <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-4 " data-anim="horizontal" data-x="-40" data-delay="0.2">
             <input type="text" name="name" id="hotel-name" class="tw-h-10 tw-rounded-md !tw-border-none tw-shadow-input tw-outline-none !tw-px-2 tw-flex-center tw-font-bold tw-placeholder-gray-300 tw-w-full" placeholder="name" value="<?= $name ?>" >
             <input type="text" name="location" id="hotel-location" class="tw-h-10 tw-rounded-md !tw-border-none tw-shadow-input tw-outline-none !tw-px-2 tw-flex-center tw-font-bold tw-placeholder-gray-300 tw-w-full" placeholder="location" value="<?= $location ?>">
 
@@ -74,7 +82,7 @@ $inverseRgiht = !empty($miaxPrice) ? (($miaxPrice-1000)/1000 *100) :0;
                 <option value="rest-api">Rest Api</option>
             </select>
         </div>
-        <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-4 ">
+        <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-4 " data-anim="horizontal" data-x="40" data-delay="0.2">
             <select name="sorting" id="hotel-sorting" class="tw-h-10 tw-rounded-md tw-outline-none !tw-border-none tw-shadow-input !tw-px-2 tw-flex-center tw-font-bold tw-w-full">
                 <option value="date" <?= $sorting=='date'?'selected':'' ?>>Date</option>
                 <option value="name" <?= $sorting=='name'?'selected':'' ?>>Name</option>
@@ -114,7 +122,7 @@ $inverseRgiht = !empty($miaxPrice) ? (($miaxPrice-1000)/1000 *100) :0;
                 $priceMin = get_post_meta($hotel->ID, 'price_range_min', true);
                 $rate = get_post_meta($hotel->ID, 'rating', true);
             ?>
-                <a href="<?= get_permalink($hotel->ID) ?>" class="hotel-item tw-rounded-md tw-border tw-border-solid tw-border-gray-300 tw-flex tw-text-gray-700 tw-overflow-hidden hover:tw-shadow-lg tw-transition-all">
+                <a href="<?= get_permalink($hotel->ID) ?>" class="hotel-item tw-rounded-md tw-border tw-border-solid tw-border-gray-300 tw-flex tw-text-gray-700 tw-overflow-hidden hover:tw-shadow-lg tw-transition-all" data-anim="up" data-y="40" data-delay="0.3">
                     <?php if (has_post_thumbnail($hotel->ID)): ?>
                         <?= get_the_post_thumbnail($hotel->ID, 'post-thumbnail', ['class' => 'tw-h-full tw-w-24 md:tw-w-36 tw-object-cover tw-bg-gray-300']) ?>
                     <?php else: ?>
@@ -138,14 +146,14 @@ $inverseRgiht = !empty($miaxPrice) ? (($miaxPrice-1000)/1000 *100) :0;
             wp_reset_postdata();
         endif ?>
     </div>
-    <div class="error-box <?= $hotelList->have_posts() ?'tw-hidden':'' ?> ?> tw-min-h-40 tw-mt-6">
+    <div class="error-box <?= $hotelList->have_posts() ?'tw-hidden':'' ?> ?> tw-min-h-40 tw-mt-6" data-anim="up" data-y="40" data-delay="0.3">
         <div class="tw-flex tw-items-center tw-gap-4 tw-p-6  tw-rounded-md tw-bg-red-100 tw-text-red-700 tw-m-auto">
             <i class="reisetopiaicon-info-circle tw-text-4xl"></i>
             <div class="message-content tw-font-bold">Hotel not found</div>
         </div>
     </div>
 
-    <div class="hotel-pagination-container">
+    <div class="hotel-pagination-container" data-anim="up" data-y="40" data-delay="0.3">
         <?php if ($hotelList->max_num_pages > 1): ?>
             <div class="hotel-pagination tw-flex tw-w-full tw-pt-4 md:tw-pt-10 tw-text-sm">
                 <div class="pagination-inner tw-mx-auto tw-flex tw-items-start tw-gap-1 md:tw-gap-3 tw-bg-white tw-rounded-md tw-py-2 tw-px-6">

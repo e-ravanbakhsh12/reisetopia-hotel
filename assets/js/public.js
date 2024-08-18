@@ -108,6 +108,7 @@
           $(".pagination-inner").removeClass("skeleton");
           $(".pagination-inner .page-item").removeClass("tw-invisible");
           _this.addNewUrl(params);
+          window.dispatchEvent(new CustomEvent('queryLoaded', { detail: { container: $(".hotel-list-container").get(0) } }))
         },
       });
     }
@@ -132,7 +133,7 @@
 
         // Construct the HTML for each hotel item
         html += `  
-          <a href="${item.link}" class="hotel-item tw-rounded-md tw-border tw-border-solid tw-border-gray-300 tw-flex tw-text-gray-700 tw-overflow-hidden hover:tw-shadow-lg tw-transition-all">  
+          <a href="${item.link}" class="hotel-item tw-rounded-md tw-border tw-border-solid tw-border-gray-300 tw-flex tw-text-gray-700 tw-overflow-hidden hover:tw-shadow-lg tw-transition-all" data-anim="up" data-y="40" data-delay="0.3">  
               ${img}  
               <div class="tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-grow">  
                   <h3 class="tw-font-bold tw-text-lg tw-line-clamp-1 tw-text-black">${item.name}</h3>  
@@ -152,7 +153,7 @@
         skeleton += `  
           <div class="tw-rounded-xl tw-border tw-border-solid tw-border-gray-300 tw-flex tw-text-gray-700 tw-overflow-hidden">  
               <div class="tw-h-full tw-w-24 md:tw-w-36 tw-flex-center tw-bg-gray-300 skeleton"></div>  
-              <div class="tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-grow">  
+              <div class="tw-p-4 tw-flex tw-flex-col tw-gap-3 tw-grow">  
                   <div class="tw-w-4/5 tw-h-6 tw-rounded-lg skeleton"></div>  
                   <div class="tw-w-3/4 tw-h-4 tw-rounded-lg skeleton"></div>  
                   <div class="tw-w-1/3 tw-h-4 tw-rounded-lg skeleton"></div>  

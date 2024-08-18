@@ -15,12 +15,20 @@ class ComposerStaticInit1660330226afc66a168d10789c05fda8
         array (
             'RHC\\' => 4,
         ),
+        'F' => 
+        array (
+            'FlameCore\\UserAgent\\' => 20,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'RHC\\' => 
         array (
             0 => __DIR__ . '/../..' . '/',
+        ),
+        'FlameCore\\UserAgent\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/flamecore/user-agent/lib',
         ),
     );
 

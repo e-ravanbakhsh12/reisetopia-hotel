@@ -54,21 +54,23 @@ class RestApi
         $order = isset($params['order']) ? $params['order'] : 'DESC';
         $max_price = isset($params['max_price']) ? $params['max_price'] : '';
         $min_price = isset($params['min_price']) ? $params['min_price'] : '';
+        $page = isset($params['page']) ? $params['page'] : 1;
         $query = new Query();
-        $data = $query->getAllHotels([
+        [$list,$maxNumPages] = $query->getAllHotels([
             'name' => $name,
             'location' => $location,
             'max_price' => $max_price,
             'min_price' => $min_price,
             'sorting' => $sorting,
-            'order' => $order
+            'order' => $order,
+            'page' => $page,
         ]);
 
-        if (empty($data)) {
+        if (empty($list)) {
             return   $this->apiResponse(404, esc_html__('No hotels found'));
         }
 
-        return $this->apiResponse(200, esc_html__('hotels list'), $data);
+        return $this->apiResponse(200, esc_html__('hotels list'), ['page'=>intval($page),'maxNumPages'=>$maxNumPages,'list'=>$list]);
     }
 
     public function singleHotelsCallBack($request)

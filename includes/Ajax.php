@@ -51,20 +51,23 @@ class Ajax
         $order = $_POST['order'] ?: 'DESC';
         $max_price = $_POST['max_price'] ?: '';
         $min_price = $_POST['min_price'] ?: '';
+        $page = $_POST['page'] ?: 1;
         $query = new Query();
-        $data = $query->getAllHotels([
+        [$list,$maxNumPages] = $query->getAllHotels([
             'name' => $name,
             'location' => $location,
             'max_price' => $max_price,
             'min_price' => $min_price,
             'sorting' => $sorting,
-            'order' => $order
+            'order' => $order,
+            'page' => $page ,
+            
         ]);
 
-        if (empty($data)) {
+        if (empty($list)) {
             $this->ajaxResponse(404, 'No hotels found');
         }
-        $this->ajaxResponse(200, esc_html__('hotels list'), $data);
+        $this->ajaxResponse(200, esc_html__('hotels list'), ['page'=>intval($page),'maxNumPages'=>$maxNumPages,'list'=>$list]);
     }
 
     public function getHotelById()

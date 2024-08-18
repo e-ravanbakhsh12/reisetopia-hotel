@@ -32,13 +32,15 @@ class Query
             'max_price' => '',
             'min_price' => '',
             'sorting' => 'date',
-            'order' => 'DESC'
+            'order' => 'DESC',
+            'page'=>1,
         ];
         $attrs = wp_parse_args($attrs, $defaultAttrs);
         $return = [];
         $args = array(
             'post_type'  => 'reisetopia_hotel',
-            'posts_per_page' => -1,
+            'posts_per_page' => 2,
+            'paged'=>$attrs['page'],
             'order' => $attrs['order'],
             'orderby' => $attrs['sorting'] == 'price_range_max' || $attrs['sorting'] == 'price_range_min' ? 'meta_value_num' : $attrs['sorting'],
         );
@@ -93,7 +95,7 @@ class Query
             }
             wp_reset_postdata();
         }
-        return $return;
+        return [$return,$result->max_num_pages];
     }
 
     function getHotelById($id)

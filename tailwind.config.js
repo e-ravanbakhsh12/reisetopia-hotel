@@ -14,7 +14,9 @@ module.exports = {
       center: true,
     },
     extend: {
-      colors: {},
+      colors: {
+        'green-1':'#588f8f',
+      },
 
       fontFamily: {
         sans: ["sanserif", "arial", "sans-serif"],

@@ -50,30 +50,25 @@
       const location = $("#hotel-location").val();
       let data;
       let url;
+      const params = {
+        name,
+        location,
+        sorting,
+        order,
+        max_price,
+        min_price,
+        page,
+      };
       if (type == "ajax") {
         url = rhcArr.adminAjax;
         data = {
+          ...params,
           nonce: rhcArr.nonce,
           action: "reisetopia_hotels_get_all",
-          name,
-          location,
-          sorting,
-          order,
-          max_price,
-          min_price,
-          page,
         };
       } else if (type == "rest-api") {
         url = rhcArr.homeUrl + "/wp-json/reisetopia-hotels/v1/hotels/";
-        data = JSON.stringify({
-          name,
-          location,
-          sorting,
-          order,
-          max_price,
-          min_price,
-          page,
-        });
+        data = JSON.stringify(params);
       } else {
         return;
       }
@@ -109,6 +104,7 @@
             .removeClass("tw-opacity-60");
           $(".pagination-inner").removeClass("skeleton");
           $(".pagination-inner .page-item").removeClass("tw-invisible");
+          _this.addNewUrl(params);
         },
       });
     }
@@ -279,6 +275,45 @@
         paginationContainer.append(innerContainer);
       }
       return paginationContainer;
+    }
+
+    addNewUrl({ name, location, sorting, order, max_price, min_price, page }) {
+      const params = {};
+
+      if (page > 1) {
+        params.pg = page;
+      }
+      if (name.length) {
+        params['search-name'] = name;
+      }
+      if (location.length) {
+        params.location = location;
+      }
+      if (sorting !== "date") {
+        params.sorting = sorting;
+      }
+      if (order !== "DESC") {
+        params.order = order;
+      }
+      if (max_price < 1000) {
+        params["max-price"] = max_price;
+      }
+      if (min_price > 0) {
+        params["min-price"] = min_price;
+      }
+
+      if (Object.keys(params).length) {
+        const baseURL = window.location.href.split("?")[0];
+        const queryString = new URLSearchParams(params).toString();
+
+        const newUrl = `${baseURL}?${queryString}`;
+
+        if (history.pushState) {
+          history.pushState(null, null, newUrl);
+        } else {
+          window.location.href = newUrl;
+        }
+      }
     }
   }
   const publics = new Publics();

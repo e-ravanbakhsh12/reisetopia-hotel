@@ -11,27 +11,63 @@ wp_enqueue_style('rhc-public', RHC_URL . 'assets/css/public-style.css', [], RHC_
 wp_enqueue_style('range-slide', RHC_URL . 'assets/css/range-slide.css', [], RHC_VERSION, 'all');
 wp_enqueue_style('rhc-icon', RHC_URL . 'assets/reisetopiaicon/style.css', [], RHC_VERSION, 'all');
 
-$page = 1;
+$page = $_GET['pg'] ?: 1;
+$name = $_GET['search-name'] ?: '';
+$location = $_GET['location'] ?: '';
+$sorting = $_GET['sorting'] ?: 'date';
+$order = $_GET['order'] ?: 'DESC';
+$maxPrice = $_GET['max-price'] ?: 1000;
+$minPrice = $_GET['min-price'] ?: 0;
 $paginationOffset = 3;
+
 
 $args = [
     'post_type'  => 'reisetopia_hotel',
     'posts_per_page' => 10,
     'paged' => $page,
-    'sorting' => 'date',
-    'order' => 'DESC',
+    'order' => $order,
+    'orderby' => $sorting == 'price_range_max' || $sorting == 'price_range_min' ? 'meta_value_num' : $sorting,
 ];
+if ($sorting == 'price_range_max' || $sorting == 'price_range_min') $args['meta_key'] = $sorting;
+if (!empty($name)) $args['s'] = $name;
+if (!empty($location)) $args['meta_query'][] = array(
+    'relation' => 'OR',
+    array(
+        'key'     => 'city',
+        'value'   => $location,
+        'compare' => 'LIKE',
+    ),
+    array(
+        'key'     => 'country',
+        'value'   => $location,
+        'compare' => 'LIKE',
+    ),
+);
+if (!empty($maxPrice)) $args['meta_query'][] = array(
+    'key'     => 'price_range_max',
+    'value'   => $maxPrice,
+    'compare' => '<=',
+    'type'    => 'NUMERIC',
+);
+if (!empty($minPrice)) $args['meta_query'][] = array(
+    'key'     => 'price_range_min',
+    'value'   => $minPrice,
+    'compare' => '>=',
+    'type'    => 'NUMERIC',
+);
 
 
 
 $hotelList = new WP_Query($args);
 $totalPages = $hotelList->max_num_pages;
+$inverseLeft = !empty($minPrice) ? ($minPrice/1000 *100) :0;
+$inverseRgiht = !empty($miaxPrice) ? (($miaxPrice-1000)/1000 *100) :0;
 ?>
 <div class="shortcode-container tw-my-10">
     <div class="hotel-filter-container tw-flex tw-flex-col tw-gap-4 ">
         <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-4 ">
-            <input type="text" name="name" id="hotel-name" class="tw-h-10 tw-rounded-md !tw-border-none tw-shadow-input tw-outline-none !tw-px-2 tw-flex-center tw-font-bold tw-placeholder-gray-300 tw-w-full" placeholder="name">
-            <input type="text" name="location" id="hotel-location" class="tw-h-10 tw-rounded-md !tw-border-none tw-shadow-input tw-outline-none !tw-px-2 tw-flex-center tw-font-bold tw-placeholder-gray-300 tw-w-full" placeholder="location">
+            <input type="text" name="name" id="hotel-name" class="tw-h-10 tw-rounded-md !tw-border-none tw-shadow-input tw-outline-none !tw-px-2 tw-flex-center tw-font-bold tw-placeholder-gray-300 tw-w-full" placeholder="name" value="<?= $name ?>" >
+            <input type="text" name="location" id="hotel-location" class="tw-h-10 tw-rounded-md !tw-border-none tw-shadow-input tw-outline-none !tw-px-2 tw-flex-center tw-font-bold tw-placeholder-gray-300 tw-w-full" placeholder="location" value="<?= $location ?>">
 
             <select name="data-source" id="hotel-data-source" class="tw-h-10 tw-rounded-md tw-outline-none !tw-border-none tw-shadow-input !tw-px-2 tw-flex-center tw-font-bold tw-w-full">
                 <option value="ajax">Ajax</option>
@@ -40,32 +76,32 @@ $totalPages = $hotelList->max_num_pages;
         </div>
         <div class="tw-flex tw-flex-col md:tw-flex-row tw-gap-4 ">
             <select name="sorting" id="hotel-sorting" class="tw-h-10 tw-rounded-md tw-outline-none !tw-border-none tw-shadow-input !tw-px-2 tw-flex-center tw-font-bold tw-w-full">
-                <option value="date">Date</option>
-                <option value="name">Name</option>
-                <option value="price_range_min">Min Price</option>
-                <option value="price_range_max">Max Price</option>
+                <option value="date" <?= $sorting=='date'?'selected':'' ?>>Date</option>
+                <option value="name" <?= $sorting=='name'?'selected':'' ?>>Name</option>
+                <option value="price_range_min" <?= $sorting=='price_range_min'?'selected':'' ?>>Min Price</option>
+                <option value="price_range_max" <?= $sorting=='price_range_max'?'selected':'' ?>>Max Price</option>
             </select>
             <select name="order" id="hotel-order" class="tw-h-10 tw-rounded-md tw-outline-none !tw-border-none tw-shadow-input !tw-px-2 tw-flex-center tw-font-bold tw-w-full">
-                <option value="DESC">Descending </option>
-                <option value="ASC">Ascending</option>
+                <option value="DESC" <?= $order=='DESC'?'selected':'' ?>>Descending </option>
+                <option value="ASC" <?= $order=='ASC'?'selected':'' ?>>Ascending</option>
             </select>
             <div slider id="slider-distance" class="tw-w-full">
                 <div>
-                    <div inverse-left style="width:0%;"></div>
-                    <div inverse-right style="width:0%;"></div>
-                    <div class="range" style="left:0%;right:0%;"></div>
-                    <span class="thumb" style="left:0%;"></span>
-                    <span class="thumb" style="left:100%;"></span>
-                    <div class="sign" style="left:0%;">
-                        <span id="value">0</span>
+                    <div inverse-left style="width:<?= $inverseLeft ?>%;"></div>
+                    <div inverse-right style="width:<?= $inverseRgiht ?>%;"></div>
+                    <div class="range" style="left:<?= $inverseLeft ?>%;right:<?= $inverseRgiht ?>%;"></div>
+                    <span class="thumb" style="left:<?= $inverseLeft ?>%;"></span>
+                    <span class="thumb" style="left:<?= $inverseRgiht-100 ?>%;"></span>
+                    <div class="sign" style="left:<?= $inverseLeft ?>%;">
+                        <span id="value"><?= $minPrice ?></span>
                     </div>
-                    <div class="sign" style="left:100%;">
-                        <span id="value">1000</span>
+                    <div class="sign" style="left:<?= $inverseRgiht-100 ?>%;">
+                        <span id="value"><?= $maxPrice ?></span>
                     </div>
                 </div>
-                <input name="min-price" id="hotel-min-price" type="range" tabindex="0" value="0" max="1000" min="0" step="1" />
+                <input name="min-price" id="hotel-min-price" type="range" tabindex="0" value="<?= $minPrice ?>" max="1000" min="0" step="1" />
 
-                <input name="max-price" id="hotel-max-price" type="range" tabindex="0" value="1000" max="1000" min="0" step="1" />
+                <input name="max-price" id="hotel-max-price" type="range" tabindex="0" value="<?= $maxPrice ?>" max="1000" min="0" step="1" />
             </div>
         </div>
     </div>
@@ -102,10 +138,10 @@ $totalPages = $hotelList->max_num_pages;
             wp_reset_postdata();
         endif ?>
     </div>
-    <div class="error-box tw-hidden tw-min-h-40 tw-mt-6">
+    <div class="error-box <?= $hotelList->have_posts() ?'tw-hidden':'' ?> ?> tw-min-h-40 tw-mt-6">
         <div class="tw-flex tw-items-center tw-gap-4 tw-p-6  tw-rounded-md tw-bg-red-100 tw-text-red-700 tw-m-auto">
             <i class="reisetopiaicon-info-circle tw-text-4xl"></i>
-            <div class="message-content tw-font-bold"></div>
+            <div class="message-content tw-font-bold">Hotel not found</div>
         </div>
     </div>
 

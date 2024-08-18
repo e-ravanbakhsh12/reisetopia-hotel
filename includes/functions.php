@@ -1,7 +1,5 @@
 <?php
 
-use FlameCore\UserAgent\UserAgent;
-
 /**
  * Checks if the Advanced Custom Fields (ACF) plugin is active.
  * If ACF is not active, it triggers an admin notice to inform the user.

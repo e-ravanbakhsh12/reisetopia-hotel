@@ -15,6 +15,5 @@
         }
     ],
     "require": {
-        "flamecore/user-agent": "dev-master"
     }
 }

@@ -3,8 +3,7 @@
 namespace RHC\includes;
 
 /**
- * This file is the maine class of ajax of plugin
- * 
+ * This file contains the main class for handling the plugin's activation and deactivation actions.
  */
 
 // Exit if accessed directly
@@ -12,23 +11,37 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-
 /**
- * The plugin active & deactivate action class.
+ * The plugin activation and deactivation action class.
  *
- * this class used to evaluate and display all thing about ajax
- *
+ * This class handles the actions that should be executed when the plugin is activated or deactivated.
  */
 class ActiveAction
 {
 
-
-    public   function activate()
+    /**
+     * Handles the plugin activation process.
+     *
+     * This method is triggered when the plugin is activated. It can be used to set up
+     * necessary resources, database tables, default settings, etc.
+     *
+     * @return void
+     */
+    public function activate(): void
     {
-        
+        // Add your activation logic here
     }
 
-    public   function deactivate()
+    /**
+     * Handles the plugin deactivation process.
+     *
+     * This method is triggered when the plugin is deactivated. It can be used to clean up resources,
+     * such as removing database tables, clearing caches, or resetting options.
+     *
+     * @return void
+     */
+    public function deactivate(): void
     {
+        // Add your deactivation logic here
     }
 }

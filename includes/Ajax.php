@@ -3,7 +3,7 @@
 namespace RHC\includes;
 
 /**
- * This file is the maine class of ajax of plugin
+ * This file contains the main AJAX class of the plugin.
  * 
  */
 
@@ -12,27 +12,38 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-
 /**
- * The main plugin ajax class.
+ * The main plugin AJAX class.
  *
- * this class used to evaluate and display all thing about ajax
+ * This class handles AJAX requests and responses for the plugin.
  *
  */
 class Ajax
 {
+    /**
+     * @var string $nonce The nonce used for AJAX security.
+     */
     protected $nonce;
+
+    /**
+     * Constructor method.
+     * Initializes the nonce property.
+     */
     public function __construct()
     {
         $this->nonce = 'rhc_nonce';
     }
 
     /**
-     * Ajax array response for wp_send_json
+     * Sends an AJAX response with a status code, message, and optional value.
+     *
+     * @param int $status The HTTP status code for the response. Defaults to 200.
+     * @param string|null $message The message to include in the response. Defaults to null.
+     * @param mixed $value The value to include in the response. Defaults to null.
+     * @return void
      */
-    public  function ajaxResponse($status = 200, $message = null, $value = null)
+    public function ajaxResponse(int $status = 200, ?string $message = null, $value = null): void
     {
-
         $response = array(
             'message' => $message,
             'value' => $value,
@@ -42,9 +53,15 @@ class Ajax
         wp_die();
     }
 
-    public function getHotelsList()
+    /**
+     * Handles the AJAX request to get a list of hotels.
+     *
+     * @return void
+     */
+    public function getHotelsList(): void
     {
         $this->checkNonce();
+
         $name = $_POST['name'] ?: '';
         $location = $_POST['location'] ?: '';
         $sorting = $_POST['sorting'] ?: 'date';
@@ -52,46 +69,69 @@ class Ajax
         $max_price = $_POST['max_price'] ?: '';
         $min_price = $_POST['min_price'] ?: '';
         $page = $_POST['page'] ?: 1;
+
         $query = new Query();
-        [$list,$maxNumPages] = $query->getAllHotels([
+        [$list, $maxNumPages] = $query->getAllHotels([
             'name' => $name,
             'location' => $location,
             'max_price' => $max_price,
             'min_price' => $min_price,
             'sorting' => $sorting,
             'order' => $order,
-            'page' => $page ,
-            
+            'page' => $page,
         ]);
 
         if (empty($list)) {
             $this->ajaxResponse(404, 'No hotels found');
         }
-        $this->ajaxResponse(200, esc_html__('hotels list'), ['page'=>intval($page),'maxNumPages'=>$maxNumPages,'list'=>$list]);
+
+        $this->ajaxResponse(200, esc_html__('Hotels list'), [
+            'page' => intval($page),
+            'maxNumPages' => $maxNumPages,
+            'list' => $list
+        ]);
     }
 
-    public function getHotelById()
+    /**
+     * Handles the AJAX request to get a hotel by its ID.
+     *
+     * @return void
+     */
+    public function getHotelById(): void
     {
         $this->checkNonce();
+
         $id = $_POST['id'];
         $query = new Query();
         [$hotel, $data] = $query->getHotelById($id);
+
         if (!$hotel || $hotel->post_type !== 'reisetopia_hotel') {
             $this->ajaxResponse(404, 'Hotel not found');
         }
-        $this->ajaxResponse(200, esc_html__('hotel data'), $data);
+
+        $this->ajaxResponse(200, esc_html__('Hotel data'), $data);
     }
 
-    public function checkNonce()
+    /**
+     * Verifies the nonce to ensure the request is legitimate.
+     *
+     * @return void
+     */
+    public function checkNonce(): void
     {
-        $nonce  = (isset($_POST['nonce'])) ? $_POST['nonce'] : $_GET['nonce'];
+        $nonce = (isset($_POST['nonce'])) ? $_POST['nonce'] : $_GET['nonce'];
 
         if (!wp_verify_nonce($nonce, $this->nonce)) {
             $this->ajaxResponse(400, esc_html__('Are you cheating!!', 'rhc'));
         }
     }
 
-    public function getNonce()
+    /**
+     * Retrieves the nonce value used in AJAX requests.
+     *
+     * @return string The nonce value.
+     */
+    public function getNonce(): string
     {
         return $this->nonce;
     }

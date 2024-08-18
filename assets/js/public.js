@@ -3,10 +3,15 @@
 
   class Publics {
     constructor() {
-      const _this = this;
       this.searchTimeout;
       this.isSearching = false;
 
+      // Event listeners
+      this.initializeEventListeners();
+    }
+
+    initializeEventListeners() {
+      const _this = this;
       $(document).on(
         "change",
         "#hotel-data-source, #hotel-sorting, #hotel-order ",
@@ -17,12 +22,10 @@
       $(document).on(
         "change keyup pest",
         "#hotel-name, #hotel-location, #hotel-min-price, #hotel-max-price",
-        function (e) {
+        (e) => {
           e.preventDefault();
           clearTimeout(_this.searchTimeout);
-          _this.searchTimeout = setTimeout(() => {
-            _this.updateList();
-          }, 800);
+          _this.searchTimeout = setTimeout(() => _this.updateList(), 800);
         }
       );
 
@@ -284,7 +287,7 @@
         params.pg = page;
       }
       if (name.length) {
-        params['search-name'] = name;
+        params["search-name"] = name;
       }
       if (location.length) {
         params.location = location;

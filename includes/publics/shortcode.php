@@ -11,13 +11,13 @@ wp_enqueue_style('rhc-public', RHC_URL . 'assets/css/public-style.css', [], RHC_
 wp_enqueue_style('range-slide', RHC_URL . 'assets/css/range-slide.css', [], RHC_VERSION, 'all');
 wp_enqueue_style('rhc-icon', RHC_URL . 'assets/reisetopiaicon/style.css', [], RHC_VERSION, 'all');
 
-$page = $_GET['pg'] ?: 1;
-$name = $_GET['search-name'] ?: '';
-$location = $_GET['location'] ?: '';
-$sorting = $_GET['sorting'] ?: 'date';
-$order = $_GET['order'] ?: 'DESC';
-$maxPrice = $_GET['max-price'] ?: 1000;
-$minPrice = $_GET['min-price'] ?: 0;
+$page = $_GET['pg'] ?? 1;
+$name = $_GET['search-name'] ?? '';
+$location = $_GET['location'] ?? '';
+$sorting = $_GET['sorting'] ?? 'date';
+$order = $_GET['order'] ?? 'DESC';
+$maxPrice = $_GET['max-price'] ?? 1000;
+$minPrice = $_GET['min-price'] ?? 0;
 $paginationOffset = 3;
 
 

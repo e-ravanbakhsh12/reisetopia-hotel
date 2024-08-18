@@ -16,7 +16,7 @@ $paginationOffset = 3;
 
 $args = [
     'post_type'  => 'reisetopia_hotel',
-    'posts_per_page' => 2,
+    'posts_per_page' => 10,
     'paged' => $page,
     'sorting' => 'date',
     'order' => 'DESC',

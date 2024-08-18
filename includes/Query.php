@@ -39,7 +39,7 @@ class Query
         $return = [];
         $args = array(
             'post_type'  => 'reisetopia_hotel',
-            'posts_per_page' => 2,
+            'posts_per_page' => 10,
             'paged'=>$attrs['page'],
             'order' => $attrs['order'],
             'orderby' => $attrs['sorting'] == 'price_range_max' || $attrs['sorting'] == 'price_range_min' ? 'meta_value_num' : $attrs['sorting'],

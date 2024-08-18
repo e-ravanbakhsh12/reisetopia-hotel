@@ -147,7 +147,7 @@
       return html; // Return the generated HTML
     }
 
-    generateLoading(selector, number = 6) {
+    generateLoading(selector, number = 10) {
       let skeleton = "";
       for (let i = 0; i < number; i++) {
         skeleton += `  

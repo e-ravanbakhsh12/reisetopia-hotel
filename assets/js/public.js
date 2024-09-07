@@ -72,9 +72,13 @@
       } else if (type == "rest-api") {
         url = rhcArr.homeUrl + "/wp-json/reisetopia-hotels/v1/hotels/";
         data = JSON.stringify(params);
+      } else if (type == "rewrite-api") {
+        url = rhcArr.homeUrl + "/wp-ajax/reisetopia-hotels/v1/hotels/";
+        data = { ...params, nonce: rhcArr.nonce };
       } else {
         return;
       }
+      console.log(data, url);
       _this.generateLoading(".hotel-list-container");
       $.ajax({
         url,
@@ -108,7 +112,11 @@
           $(".pagination-inner").removeClass("skeleton");
           $(".pagination-inner .page-item").removeClass("tw-invisible");
           _this.addNewUrl(params);
-          window.dispatchEvent(new CustomEvent('queryLoaded', { detail: { container: $(".hotel-list-container").get(0) } }))
+          window.dispatchEvent(
+            new CustomEvent("queryLoaded", {
+              detail: { container: $(".hotel-list-container").get(0) },
+            })
+          );
         },
       });
     }
@@ -136,8 +144,8 @@
           <a href="${item.link}" class="hotel-item tw-rounded-md tw-border tw-border-solid tw-border-gray-300 tw-flex tw-text-gray-700 tw-overflow-hidden hover:tw-shadow-lg tw-transition-all" data-anim="up" data-y="40" data-delay="0.3">  
               ${img}  
               <div class="tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-grow">  
-                  <h3 class="tw-font-bold tw-text-lg tw-line-clamp-1 tw-text-black">${item.name}</h3>  
-                  <div class="tw-font-bold">Location: <span class="tw-font-normal">${item.city}</span></div>  
+                  <h3 class="tw-font-bold tw-text-lg tw-line-clamp-1 tw-text-black" title="${item.name}">${item.name}</h3>  
+                  <div class="tw-font-bold">Location: <span class="tw-font-normal" title="${item.country}, ${item.city}">${item.country}, ${item.city}</span></div>  
                   <div class="tw-font-bold">Price: <span class="tw-font-normal">${item.priceRange.min}-${item.priceRange.max}</span></div>  
                   <div class="tw-font-bold">Rating: ${rate} <span class="">( ${item.rate} )</span></div>  
               </div>  
@@ -318,6 +326,15 @@
           window.location.href = newUrl;
         }
       }
+    }
+
+    addDataToFormData(params) {
+      const formData = new FormData();
+
+      for (const key in params) {
+        formData.append(key, params[key]);
+      }
+      return formData;
     }
   }
   const publics = new Publics();

@@ -72,7 +72,7 @@ class RestApi
 
         // Query hotels based on parameters
         $query = new Query();
-        [$list, $maxNumPages] = $query->getAllHotels([
+        [$list, $maxNumPages] = $query->getAllHotels2([
             'name' => $name,
             'location' => $location,
             'max_price' => $max_price,

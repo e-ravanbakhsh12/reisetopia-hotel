@@ -202,10 +202,10 @@ class Query
             case 'name':
                 $orderby = "ORDER BY p.post_title";
                 break;
-            case 'max_price':
+            case 'price_range_max':
                 $orderby = "ORDER BY pm3.meta_value";
                 break;
-            case 'min_price':
+            case 'price_range_min':
                 $orderby = "ORDER BY pm4.meta_value";
                 break;
             default:

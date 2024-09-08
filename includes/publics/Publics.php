@@ -114,6 +114,20 @@ class Publics
         ];
     }
 
+    public function generateHotelList($hotelList)
+    {
+        ob_start();
+        include_once RHC_DIR . '/includes/publics/hotelList.php';
+        return ob_get_clean();
+    }
+
+    public function generatePagination($totalPages,$page,$paginationOffset=3)
+    {
+        ob_start();
+        include_once RHC_DIR . '/includes/publics/pagination.php';
+        return ob_get_clean();
+    }
+
     /**
      * Handle the shortcode for displaying hotels.
      *

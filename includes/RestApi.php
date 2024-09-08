@@ -2,6 +2,7 @@
 
 namespace RHC\includes;
 
+use RHC\includes\publics\Publics;
 use WP_REST_Request;  // Import the WP_REST_Request class to ensure type safety
 use WP_REST_Response; // Import the WP_REST_Response class for API responses
 
@@ -87,12 +88,16 @@ class RestApi
             return $this->apiResponse(404, esc_html__('No hotels found'));
         }
 
+        $publics = new Publics();
+        $htmlList = $publics->generateHotelList($list);
+        $htmlPagination = $publics->generatePagination($maxNumPages, $page);
+
         // Return the list of hotels with a 200 status code
-        return $this->apiResponse(200, esc_html__('Hotels list'), [
-            'page' => intval($page),
-            'maxNumPages' => $maxNumPages,
-            'list' => $list
+        $this->apiResponse(200, esc_html__('Hotels list'), [
+            'pagination' => $htmlPagination,
+            'list' => $htmlList
         ]);
+
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace RHC\includes;
 
+use RHC\includes\publics\Publics;
+
 /**
  * This file contains the main AJAX class of the plugin.
  * 
@@ -80,15 +82,18 @@ class Ajax
             'order' => $order,
             'page' => $page,
         ]);
+        
 
         if (empty($list)) {
             $this->ajaxResponse(404, 'No hotels found');
         }
-
+        $publics = new Publics();
+        $htmlList = $publics->generateHotelList($list);
+        $htmlPagination = $publics->generatePagination($maxNumPages,$page);
+        
         $this->ajaxResponse(200, esc_html__('Hotels list'), [
-            'page' => intval($page),
-            'maxNumPages' => $maxNumPages,
-            'list' => $list
+            'pagination' => $htmlPagination,
+            'list' => $htmlList
         ]);
     }
 

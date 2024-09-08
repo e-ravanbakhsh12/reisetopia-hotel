@@ -114,14 +114,32 @@ class Publics
         ];
     }
 
-    public function generateHotelList($hotelList)
+    /**  
+     * Generate a list of hotels.  
+     *  
+     * This method includes the hotel list file for rendering the hotel information.  
+     *  
+     * @param array $hotelList List of hotels to display.  
+     * @return string Rendered HTML of the hotel list.  
+     */
+    public function generateHotelList(array $hotelList): string
     {
         ob_start();
         include_once RHC_DIR . '/includes/publics/hotelList.php';
         return ob_get_clean();
     }
 
-    public function generatePagination($totalPages,$page,$paginationOffset=3)
+    /**  
+     * Generate pagination for hotel listings.  
+     *  
+     * This method includes the pagination file for rendering pagination controls.  
+     *  
+     * @param int $totalPages Total number of pages.  
+     * @param int $page Current page number.  
+     * @param int $paginationOffset Number of pagination links to show on each side of the current page.  
+     * @return string Rendered HTML of the pagination.  
+     */
+    public function generatePagination(int $totalPages, int $page, int $paginationOffset = 3): string
     {
         ob_start();
         include_once RHC_DIR . '/includes/publics/pagination.php';

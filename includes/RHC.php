@@ -75,6 +75,12 @@ class RHC
         add_action('wp_ajax_nopriv_reisetopia_hotels_get_by_id', [$ajax, 'getHotelById']);
     }
 
+
+    /**
+     * Set up Rewrite AJAX hooks needed for the plugin.
+     *
+     * @return void
+     */
     public function setRewriteApiHooks(): void
     {
         $rewriteApi = new RewriteApi();

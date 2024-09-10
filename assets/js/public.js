@@ -122,7 +122,7 @@
         skeleton += `  
           <div class="tw-rounded-xl tw-border tw-border-solid tw-border-gray-300 tw-flex tw-text-gray-700 tw-overflow-hidden">  
               <div class="tw-h-full tw-w-24 md:tw-w-36 tw-flex-center tw-bg-gray-300 skeleton"></div>  
-              <div class="tw-p-4 tw-flex tw-flex-col tw-gap-3 tw-grow">  
+              <div class="tw-p-4 tw-flex tw-flex-col tw-gap-4 tw-grow">  
                   <div class="tw-w-4/5 tw-h-6 tw-rounded-lg skeleton"></div>  
                   <div class="tw-w-3/4 tw-h-4 tw-rounded-lg skeleton"></div>  
                   <div class="tw-w-1/3 tw-h-4 tw-rounded-lg skeleton"></div>  

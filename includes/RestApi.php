@@ -93,7 +93,7 @@ class RestApi
         $htmlPagination = $publics->generatePagination($maxNumPages, $page);
 
         // Return the list of hotels with a 200 status code
-        $this->apiResponse(200, esc_html__('Hotels list'), [
+        return $this->apiResponse(200, esc_html__('Hotels list'), [
             'pagination' => $htmlPagination,
             'list' => $htmlList
         ]);
@@ -121,7 +121,7 @@ class RestApi
         }
 
         // Return the hotel data with a 200 status code
-        return $this->apiResponse(200, esc_html__('Hotel data'), $data);
+        return $this->apiResponse(200, esc_html__('Hotel data'), json_encode($data));
     }
 
     /**
@@ -141,6 +141,7 @@ class RestApi
         );
 
         // Return a WP_REST_Response object with the response data and status code
-        return new WP_REST_Response($response, $status);
+        $mainResponse = new WP_REST_Response($response, $status);
+        return $mainResponse;
     }
 }

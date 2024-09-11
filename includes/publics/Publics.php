@@ -152,10 +152,12 @@ class Publics
      * This method includes the shortcode file for rendering the hotel list.
      *
      * @param array $attrs Shortcode attributes.
-     * @return void
+     * @return string
      */
-    public function reisetopiaHotelsShortcodeHandler(array $attrs = []): void
+    public function reisetopiaHotelsShortcodeHandler(array $attrs = []): string
     {
+        ob_start();
         include_once RHC_DIR . '/includes/publics/shortcode.php';
+        return ob_get_clean();
     }
 }

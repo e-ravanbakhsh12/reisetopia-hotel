@@ -188,10 +188,13 @@ class Query
 
         if (is_array($args['params']) && count($args['params'])) {
             for ($i = 1; $i <= count($args['params']); $i++) {
-                $metaValue .= ", pm{$i}.meta_value as {$args['params'][$i-1]}";
+                $metaValue .= ", meta_data.{$args['params'][$i - 1]}";
                 $join .= "  
-                LEFT JOIN {$wpdb->prefix}postmeta pm{$i} ON p.ID = pm{$i}.post_id AND pm{$i}.meta_key = '{$args['params'][$i-1]}'  
+                MAX(CASE WHEN meta_key = '{$args['params'][$i - 1]}' THEN meta_value END) AS {$args['params'][$i - 1]}
             ";
+                if ($i < count($args['params'])) {
+                    $join .= ",";
+                }
             }
         }
 
@@ -203,10 +206,10 @@ class Query
                 $orderby = "ORDER BY p.post_title";
                 break;
             case 'price_range_max':
-                $orderby = "ORDER BY pm3.meta_value";
+                $orderby = "ORDER BY meta_data.price_range_max";
                 break;
             case 'price_range_min':
-                $orderby = "ORDER BY pm4.meta_value";
+                $orderby = "ORDER BY meta_data.price_range_min";
                 break;
             default:
                 $orderby = 'ORDER BY p.post_date';
@@ -215,11 +218,11 @@ class Query
 
         // Adding filters for price range  
         if (!empty($args['min_price'])) {
-            $conditions[] = 'pm4.meta_value >= %d'; // assuming pm4 for min_price  
+            $conditions[] = 'meta_data.price_range_min >= %d'; // assuming pm4 for min_price  
             $prepareParams[] = $args['min_price'];
         }
         if (!empty($args['max_price'])) {
-            $conditions[] = 'pm3.meta_value <= %d'; // assuming pm3 for max_price  
+            $conditions[] = 'meta_data.price_range_max <= %d'; // assuming pm3 for max_price  
             $prepareParams[] = $args['max_price'];
         }
         // Adding filter for name  
@@ -230,7 +233,7 @@ class Query
 
         // Adding filter for location  
         if (!empty($args['location'])) {
-            $conditions[] = "(pm1.meta_value LIKE %s OR pm2.meta_value LIKE %s)";
+            $conditions[] = "(meta_data.city LIKE %s OR meta_data.country LIKE %s)";
             $escapedLocation = '%' . $wpdb->esc_like($args['location']) . '%';
             $prepareParams[] = $escapedLocation;
             $prepareParams[] = $escapedLocation;
@@ -240,7 +243,12 @@ class Query
         $totalQuery = "  
         SELECT COUNT(DISTINCT p.ID)   
         FROM {$wpdb->prefix}posts p  
-        {$join}  
+        LEFT JOIN (  
+        SELECT post_id,  
+        {$join}
+        FROM {$wpdb->prefix}postmeta  
+        GROUP BY post_id  
+        ) AS meta_data ON meta_data.post_id = p.ID    
         WHERE p.post_type = 'reisetopia_hotel' AND p.post_status = %s";
 
         if ($conditions) {
@@ -259,7 +267,12 @@ class Query
         $query = "  
         SELECT DISTINCT p.* {$metaValue}   
         FROM {$wpdb->prefix}posts p  
-        {$join}  
+        LEFT JOIN (  
+        SELECT post_id,  
+        {$join}
+        FROM {$wpdb->prefix}postmeta  
+        GROUP BY post_id  
+        ) AS meta_data ON meta_data.post_id = p.ID  
         WHERE p.post_type = 'reisetopia_hotel' AND p.post_status = %s";
 
         if ($conditions) {
@@ -270,7 +283,7 @@ class Query
 
         // Prepare the query with the correct order of parameters  
         $results = $wpdb->get_results($wpdb->prepare($query, ...array_values($prepareParams)));
-        // $debug =  [$wpdb->last_query,$wpdb->error];
+        $debug =  [$wpdb->last_query, $wpdb->error];
         // Initialize return array  
         $return = [];
 
@@ -293,6 +306,7 @@ class Query
         // Return the list of hotels and the max number of pages  
         return [$return, $maxNumPages];
     }
+
 
     /**
      * Retrieves a single hotel's data by its ID.

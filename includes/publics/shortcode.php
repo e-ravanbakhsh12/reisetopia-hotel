@@ -13,7 +13,7 @@ wp_enqueue_script('range-slide', RHC_URL . 'assets/js/range-slide.js', [], RHC_V
 wp_enqueue_script('rhc-public', RHC_URL . 'assets/js/public.js', ['jquery', 'range-slide'], RHC_VERSION, true);
 wp_localize_script('rhc-public', 'rhcArr', $this->localizeArr());
 // js animation fiels
-if (!isGoogleBot()) {
+if (!isGoogleBot() && 0) {
     wp_enqueue_script('gsap', RHC_URL . '/assets/js/gsap.min.js', '3.12.5', true);
     wp_enqueue_script('gsap-st', RHC_URL . '/assets/js/scrollTrigger.min.js', ['gsap'], '3.12.5', true);
     wp_enqueue_script('rhc-animation', RHC_URL . '/assets/js/animation.js', ['jquery', 'gsap', 'gsap-st'], RHC_VERSION, true);

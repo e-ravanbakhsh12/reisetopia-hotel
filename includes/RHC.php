@@ -5,6 +5,7 @@ namespace RHC\includes;
 use RHC\includes\publics\Publics;
 use RHC\includes\RestApi;
 use RHC\includes\Ajax;
+use RHC\includes\RewriteApi;
 
 /**
  * This file contains the main class of the plugin.
@@ -37,6 +38,9 @@ class RHC
 
         // Set up AJAX hooks
         $this->setAjaxHooks();
+
+        // set Rewrite Api hooks
+        $this->setRewriteApiHooks();
     }
 
     /**
@@ -71,6 +75,20 @@ class RHC
         add_action('wp_ajax_nopriv_reisetopia_hotels_get_by_id', [$ajax, 'getHotelById']);
     }
 
+    
+    /**
+     * Set up Rewrite AJAX hooks needed for the plugin.
+     *
+     * @return void
+     */
+    public function setRewriteApiHooks(): void
+    {
+        $rewriteApi = new RewriteApi();
+        add_filter('query_vars', [$rewriteApi, 'addQueryVars']);
+        add_action('init', [$rewriteApi, 'defineAjaxRoute']);
+        add_action('template_redirect', [$rewriteApi, 'ajaxHandler']);
+    }
+
     /**
      * Set up public-facing hooks needed for the plugin.
      *
@@ -88,6 +106,6 @@ class RHC
         add_action('init', [$publics, 'registerPostType']);
 
         // Register a shortcode for displaying hotel listings
-        add_shortcode('reisetopia-hotels', [$publics, 'reisetopiaHotelsShortcodeHandler']);  
+        add_shortcode('reisetopia-hotels', [$publics, 'reisetopiaHotelsShortcodeHandler']);
     }
 }

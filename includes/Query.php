@@ -142,6 +142,172 @@ class Query
     }
 
     /**
+     * Retrieves a list of hotels based on the specified attributes.
+     *
+     * @param array $attrs The attributes for querying hotels.
+     * - params (array): The meta keys to retrieve (e.g., ['country', 'city', 'price_range_max', 'price_range_min', 'rating']).  
+     * - name (string): The name of the hotel.  
+     * - location (string): The location of the hotel (city or country).  
+     * - max_price (string|int): The maximum price for filtering.  
+     * - min_price (string|int): The minimum price for filtering.  
+     * - status (string): The post status (default: 'publish').  
+     * - sorting (string): The sorting criteria (default: 'date').  
+     * - order (string): The sorting order ('ASC' or 'DESC').  
+     * - page (int): The page number for pagination (default: 1).  
+     * - items (int): The items fetch on query (default: 10).  
+     *
+     * @return array An array containing:
+     * - array $return: The list of hotels.
+     * - int $result->max_num_pages: The maximum number of pages available.
+     */
+    public function getAllHotels2(array $args = []): array
+    {
+        // Default attributes  
+        $defaultArgs = [
+            'params' => ['country', 'city', 'price_range_max', 'price_range_min', 'rating'],
+            'name' => '',
+            'location' => '',
+            'max_price' => '',
+            'min_price' => '',
+            'status' => 'publish',
+            'sorting' => 'date',
+            'order' => 'DESC',
+            'page' => 1,
+            'items' => 10,
+        ];
+
+        // Merge provided attributes with defaults  
+        $args = wp_parse_args($args, $defaultArgs);
+        global $wpdb;
+
+        $join = '';
+        $metaValue = '';
+        $conditions = [];
+        $orderby = '';
+        $prepareParams = [$args['status']];
+
+        if (is_array($args['params']) && count($args['params'])) {
+            for ($i = 1; $i <= count($args['params']); $i++) {
+                $metaValue .= ", meta_data.{$args['params'][$i - 1]}";
+                $join .= "  
+                MAX(CASE WHEN meta_key = '{$args['params'][$i - 1]}' THEN meta_value END) AS {$args['params'][$i - 1]}
+            ";
+                if ($i < count($args['params'])) {
+                    $join .= ",";
+                }
+            }
+        }
+
+        switch ($args['sorting']) {
+            case 'date':
+                $orderby = 'ORDER BY p.post_date';
+                break;
+            case 'name':
+                $orderby = "ORDER BY p.post_title";
+                break;
+            case 'price_range_max':
+                $orderby = "ORDER BY meta_data.price_range_max";
+                break;
+            case 'price_range_min':
+                $orderby = "ORDER BY meta_data.price_range_min";
+                break;
+            default:
+                $orderby = 'ORDER BY p.post_date';
+                break;
+        }
+
+        // Adding filters for price range  
+        if (!empty($args['min_price'])) {
+            $conditions[] = 'meta_data.price_range_min >= %d'; // assuming pm4 for min_price  
+            $prepareParams[] = $args['min_price'];
+        }
+        if (!empty($args['max_price'])) {
+            $conditions[] = 'meta_data.price_range_max <= %d'; // assuming pm3 for max_price  
+            $prepareParams[] = $args['max_price'];
+        }
+        // Adding filter for name  
+        if (!empty($args['name'])) {
+            $conditions[] = "p.post_title LIKE %s";
+            $prepareParams[] = '%' . $wpdb->esc_like($args['name']) . '%';
+        }
+
+        // Adding filter for location  
+        if (!empty($args['location'])) {
+            $conditions[] = "(meta_data.city LIKE %s OR meta_data.country LIKE %s)";
+            $escapedLocation = '%' . $wpdb->esc_like($args['location']) . '%';
+            $prepareParams[] = $escapedLocation;
+            $prepareParams[] = $escapedLocation;
+        }
+
+        // Get total hotel  
+        $totalQuery = "  
+        SELECT COUNT(DISTINCT p.ID)   
+        FROM {$wpdb->prefix}posts p  
+        LEFT JOIN (  
+        SELECT post_id,  
+        {$join}
+        FROM {$wpdb->prefix}postmeta  
+        GROUP BY post_id  
+        ) AS meta_data ON meta_data.post_id = p.ID    
+        WHERE p.post_type = 'reisetopia_hotel' AND p.post_status = %s";
+
+        if ($conditions) {
+            $totalQuery .= ' AND ' . implode(' AND ', $conditions);
+        }
+
+        $totalHotels = $wpdb->get_var($wpdb->prepare($totalQuery, ...array_values($prepareParams)));
+
+        // Pagination  
+        $offset = ($args['page'] - 1) * $args['items'];
+        $maxNumPages = ceil($totalHotels / $args['items']);
+        $prepareParams[] = $offset;
+        $prepareParams[] = $args['items'];
+
+        // Main Query  
+        $query = "  
+        SELECT DISTINCT p.* {$metaValue}   
+        FROM {$wpdb->prefix}posts p  
+        LEFT JOIN (  
+        SELECT post_id,  
+        {$join}
+        FROM {$wpdb->prefix}postmeta  
+        GROUP BY post_id  
+        ) AS meta_data ON meta_data.post_id = p.ID  
+        WHERE p.post_type = 'reisetopia_hotel' AND p.post_status = %s";
+
+        if ($conditions) {
+            $query .= ' AND ' . implode(' AND ', $conditions);
+        }
+
+        $query .= " GROUP BY p.ID {$orderby} {$args['order']} LIMIT %d, %d";
+
+        // Prepare the query with the correct order of parameters  
+        $results = $wpdb->get_results($wpdb->prepare($query, ...array_values($prepareParams)));
+        $debug =  [$wpdb->last_query, $wpdb->error];
+        // Initialize return array  
+        $return = [];
+
+        // If there are posts, build the return array  
+        if ($results) {
+            foreach ($results as $hotel) {
+                $return[] = [
+                    'id' => $hotel->ID,
+                    'name' => $hotel->post_title,
+                    'city' => $hotel->city,
+                    'country' => $hotel->country,
+                    'priceRange' => ['min' => $hotel->price_range_min, 'max' => $hotel->price_range_max],
+                    'rate' => $hotel->rating,
+                    'link' => get_permalink($hotel->ID),
+                    'img' => get_the_post_thumbnail_url($hotel->ID, 'post-thumbnail'),
+                ];
+            }
+        }
+
+        // Return the list of hotels and the max number of pages  
+        return [$return, $maxNumPages];
+    }
+
+    /**
      * Retrieves a single hotel's data by its ID.
      *
      * @param int $id The ID of the hotel.

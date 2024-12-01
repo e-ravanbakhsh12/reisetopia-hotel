@@ -2,6 +2,7 @@
 
 namespace RHC\includes;
 
+use RHC\includes\publics\Publics;
 use WP_REST_Request;  // Import the WP_REST_Request class to ensure type safety
 use WP_REST_Response; // Import the WP_REST_Response class for API responses
 
@@ -72,7 +73,7 @@ class RestApi
 
         // Query hotels based on parameters
         $query = new Query();
-        [$list, $maxNumPages] = $query->getAllHotels([
+        [$list, $maxNumPages] = $query->getAllHotels2([
             'name' => $name,
             'location' => $location,
             'max_price' => $max_price,
@@ -87,12 +88,16 @@ class RestApi
             return $this->apiResponse(404, esc_html__('No hotels found'));
         }
 
+        $publics = new Publics();
+        $htmlList = $publics->generateHotelList($list);
+        $htmlPagination = $publics->generatePagination($maxNumPages, $page);
+
         // Return the list of hotels with a 200 status code
         return $this->apiResponse(200, esc_html__('Hotels list'), [
-            'page' => intval($page),
-            'maxNumPages' => $maxNumPages,
-            'list' => $list
+            'pagination' => $htmlPagination,
+            'list' => $htmlList
         ]);
+
     }
 
     /**
@@ -116,7 +121,7 @@ class RestApi
         }
 
         // Return the hotel data with a 200 status code
-        return $this->apiResponse(200, esc_html__('Hotel data'), $data);
+        return $this->apiResponse(200, esc_html__('Hotel data'), json_encode($data));
     }
 
     /**
@@ -136,6 +141,7 @@ class RestApi
         );
 
         // Return a WP_REST_Response object with the response data and status code
-        return new WP_REST_Response($response, $status);
+        $mainResponse = new WP_REST_Response($response, $status);
+        return $mainResponse;
     }
 }
